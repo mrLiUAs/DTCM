@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DTCM - MED</title>
+</head>
+<body>
+    <h1>DTCM 開藥 - {{ patientName }}</h1>
+    <textarea id="med" cols="30" rows="10"></textarea><br>
+    <button onclick="send();">傳送</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script>
+        function send(){
+            if(confirm("確定傳送處方？")){
+                let med = document.getElementById("med").value;
+                axios.post("/api/med", {
+                    name: "{{ patientName }}",
+                    doc: "{{ doctorName }}",
+                    med: med,
+                })
+                .then(res => {
+                    console.log(res);
+                    alert("傳送成功");
+                    window.close();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("傳送失敗");
+                });
+            }
+        }
+    </script>
+</body>
+</html>

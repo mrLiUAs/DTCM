@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DTCM Doctor</title>
+    <style>
+        /* The switch - the box around the slider */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        /* Hide default HTML checkbox */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* The slider */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked+.slider {
+            background-color: #2196F3;
+        }
+
+        input:focus+.slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked+.slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="title">DTCM線上看診系統</h1>
+    <h2>您好，{{ doctorName }}醫師</h1>
+        <label class="switch">
+            <input id='online' type="checkbox" onclick="online()">
+            <span class="slider"></span>
+        </label>
+        <span id="online_text" style="font-size: 1.8rem; color: gray;">下線</span>
+        <br>
+        <h2 style="border-top: solid;">候診列表</h2>
+        <table id="list" style="font-size: 1.8rem;">
+            <tr>
+                <th>姓名</th>
+                <th>掛號時間</th>
+                <th>動作</th>
+            </tr>
+        </table>
+
+        <script src="/static/js/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+        <script>
+            fetchUpdate();
+            patients = [];
+
+            function online() {
+                if (!document.getElementById('online').checked) {
+                    if (confirm("確定下線並清空所有病患？")) {
+                        for (let patient of patients) {
+                            delete_patient(patient["name"]);
+                        }
+
+                        axios.get(`/api/online?name={{ doctorName }}&online=${document.getElementById('online').checked}`, {})
+                            .then(res => {
+                                $("#online_text").text(document.getElementById('online').checked ? "上線" : "下線");
+                                $("#online_text").css("color", document.getElementById('online').checked ? "green" : "gray");
+                                console.log(res);
+                            })
+                            .catch(err => {
+                                alert("切換狀態失敗");
+                                console.error(err);
+                            });
+                    }
+                } else {
+                    if (confirm("確定上線？")) {
+                        axios.get(`/api/online?name={{ doctorName }}&online=${document.getElementById('online').checked}`, {})
+                            .then(res => {
+                                $("#online_text").text(document.getElementById('online').checked ? "上線" : "下線");
+                                $("#online_text").css("color", document.getElementById('online').checked ? "green" : "gray");
+                                console.log(res);
+                            })
+                            .catch(err => {
+                                alert("切換狀態失敗");
+                                console.error(err);
+                            });
+                    }
+                }
+                // if (confirm((document.getElementById('online').checked ? "確定上線" : "確定刪除所有病患並下線") + "？")) {
+
+                //     axios.get(`/api/online?name={{ doctorName }}&online=${document.getElementById('online').checked}`, {})
+                //         .then(res => {
+                //             $("#online_text").text(document.getElementById('online').checked ? "上線" : "下線");
+                //             $("#online_text").css("color", document.getElementById('online').checked ? "green" : "gray");
+                //             console.log(res);
+                //         })
+                //         .catch(err => {
+                //             alert("切換狀態失敗");
+                //             console.error(err);
+                //         });
+                // }
+                // else {
+                //     document.getElementById('online').checked = !document.getElementById('online').checked;
+                // }
+            }
+
+            function fetchUpdate() {
+                axios.get('/api/get_patient?name={{ doctorName }}')
+                    .then(res => {
+                        tmp = res.data.patients;
+                        $("#online").prop("checked", res.data.online);
+                        $("#online_text").text(res.data.online ? "上線" : "下線");
+                        $("#online_text").css("color", res.data.online ? "green" : "gray");
+                        if (tmp.toString() != patients.toString()) {
+                            patients = tmp;
+                            update_patients();
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                    });
+            }
+
+            function delete_patient(patient) {
+                if (confirm("確定要刪除嗎？")) {
+                    axios.get(`/api/delete_patient?patient=${patient}`, {})
+                        .then(res => {
+                            console.log(res);
+                        })
+                        .catch(err => {
+                            alert("刪除失敗");
+                            console.error(err);
+                        });
+                };
+            }
+
+            function call_patient(patient) {
+                if (confirm("確定要叫號嗎？")) {
+                    axios.get(`/api/call_patient?name=${patient}`, {})
+                        .then(res => {
+                            // window.location.href = "/?room=" + res.data.room;
+                            window.open(`/?room=${res.data.room}&name=${patient}&doctor={{ doctorName }}`, "_blank");
+                            // window.open(`/med?name=${patient}&doctor={{ doctorName }}`, "kad", "location=1, status=1, scrollbars=1, width=600, height=800");
+                        })
+                        .catch(err => {
+                            alert("叫號失敗");
+                            console.error(err);
+                        });
+                };
+            }
+
+            function update_patients() {
+                $("#list").html(`<tr>
+                <th>姓名</th>
+                <th>掛號時間</th>
+                <th>動作</th>
+            </tr>`);
+                for (let patient of patients) {
+                    $("#list").html($("#list").html() + `
+                <tr>
+            <td>${patient["name"]}</td>
+            <td>${patient["time"]}</td>
+            <td>
+                <div>
+                    <button onclick="call_patient('${patient["name"]}')">叫號</button>
+                    <button onclick="delete_patient('${patient["name"]}')">刪除</button>
+                </div>
+            </td>
+        </tr>
+                `);
+                }
+            }
+            setInterval(fetchUpdate, 5000)
+        </script>
+</body>
+
+</html>

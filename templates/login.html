@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        #send_button {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #send_button:hover {
+            background-color: #45a049;
+        }
+
+        #reg_button {
+            width: 100%;
+            background-color: cornflowerblue;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #reg_button:hover {
+            background-color: steelblue;
+        }
+        </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>候診系統 - 登入</h1>
+        <div>
+            <input id="username" type="text" placeholder="Username" required>
+            <button id="send_button" type="button" onclick="submitForm()">Login</button>
+        </div>
+        <br>
+        <button id="reg_button">Register</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script>
+        document.querySelector('#username').addEventListener('keyup', (e) => {
+            if (e.keyCode === 13) {
+                submitForm();
+            }
+        });
+
+        function submitForm() {
+            username = document.querySelector('input[type="text"]').value
+            axios.post('/api/login', {
+                username: username,
+            })
+                .then((res) => {
+                    if (res.data.message == "Login successful") {
+                        window.location.href = `/wait?name=${username}`;
+                    }
+                    else if (res.data.message == "Invalid credentials") {
+                        alert("Invalid credentials");
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                })
+
+
+            // Perform the POST request to /api/login
+            /*
+            fetch('/api/login', {
+                method: 'POST',
+                body: JSON.stringify({
+                    username: document.querySelector('input[type="text"]').value,
+                    // password: document.querySelector('input[type="password"]').value
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                // console.log(res.json());
+                console.log(res.json);
+            })
+            // .then(response => response.json())
+            // .then(data => {
+            //     // Handle the response data
+            //     console.log(data);
+            // })
+            .catch(error => {
+                // Handle any errors
+                console.error(error);
+            });
+            */
+        }
+    </script>
+</body>
+
+</html>
