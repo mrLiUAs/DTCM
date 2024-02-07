@@ -42,6 +42,11 @@ def data():
 
 @app.route("/test", methods=["GET", "POST"])
 def test():
+    print(request.get_json())
+    return "ok"
+
+@app.route("/ttt", methods=["GET", "POST"])
+def ttt():
     return render_template("ttt.html")
 
 @app.route("/login", methods=["GET", "POST"])
@@ -58,6 +63,31 @@ def api_login():
         
     else:
         return jsonify({"message": "Invalid credentials"})
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    return render_template("signup.html")
+
+@app.route("/api/signup", methods=["POST"])
+def api_signup():
+    try:
+        data = {}
+        data["info"] = dict(request.get_json())
+
+        data["oncall"] = False
+        data["doctor"] = "None"
+        data["room"] = "None"
+
+        mongo.db.users.insert_one(data)
+
+        print("User added", data)
+
+        return jsonify({"message": "ok"})
+    except:
+        return abort(404)
+
+
+
     
 @app.route("/doctor", methods=["GET", "POST"])
 def doctor():

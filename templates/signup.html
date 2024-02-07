@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>註冊</title>
+
+    <script src="/static/js/jquery-3.7.1.min.js"></script>
+    <script src="/static/js/serial.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <!--<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        #reg_button {
+            width: 100%;
+            background-color: cornflowerblue;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #reg_button:hover {
+            background-color: steelblue;
+        }
+        </style>-->
+</head>
+
+<body>
+    <section class="position-relative py-4 py-xl-5">
+        <div class="container">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 col-xl-4" style="width: 60%;">
+                    <div class="card mb-5">
+                        <div class="card-body d-flex flex-column align-items-center">
+                            <h3>註冊</h3>
+                            <br>
+                            <form id="signup" name="signup" style="width: 80%;">
+                                <div class="form-group row">
+                                    <label for="username" class="col-4 col-form-label">Username</label>
+                                    <div class="col-8">
+                                        <div class="input-group">
+                                            <input id="username" name="username" placeholder="Username" type="text"
+                                                required="required" class="form-control">
+                                        </div>
+                                        <span style="color: gray;">登入用，必須為獨一無二</span>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="form-group row">
+                                    <label for="username" class="col-4 col-form-label">Email</label>
+                                    <div class="col-8">
+                                        <div class="input-group">
+                                            <input id="email" name="email" placeholder="Email" type="email"
+                                                required="required" class="form-control">
+                                        </div>
+                                        <span style="color: gray;">傳送藥單用</span>
+                                    </div>
+                                </div>
+
+                                <h5>基本資料</h5>
+                                <div class="form-group row">
+                                    <label for="name" class="col-4 col-form-label">姓名</label>
+                                    <div class="col-8">
+                                        <input id="name" name="name" placeholder="姓名" type="text" class="form-control"
+                                            required="required">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="form-group row">
+                                    <label class="col-4">生理性別</label>
+                                    <div class="col-8">
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input name="sex" id="sex_0" type="radio" class="custom-control-input"
+                                                value="男性" required="required">
+                                            <label for="sex_0" class="custom-control-label">男性</label>
+                                        </div>
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input name="sex" id="sex_1" type="radio" class="custom-control-input"
+                                                value="女性" required="required">
+                                            <label for="sex_1" class="custom-control-label">女性</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="form-group row">
+                                    <label for="date" class="col-4 col-form-label">出生日期</label>
+                                    <div class="col-8">
+                                        <input id="date" name="date" type="date" class="form-control"
+                                            required="required">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="form-group row">
+                                    <label for="work" class="col-4 col-form-label">職業</label>
+                                    <div class="col-8">
+                                        <input id="work" name="work" placeholder="職業" type="text" class="form-control"
+                                            required="required">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="form-group row">
+                                    <label for="address" class="col-4 col-form-label">住址</label>
+                                    <div class="col-8">
+                                        <input id="address" name="address" placeholder="住址" type="text"
+                                            class="form-control" required="required">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">病史</label>
+                                    <div class="col-8">
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="ill" id="ill_0" type="checkbox"  
+                                                    class="custom-control-input" value="蟹足腫">
+                                                <label for="ill_0" class="custom-control-label">蟹足腫</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="ill" id="ill_1" type="checkbox"  
+                                                    class="custom-control-input" value="B型肝炎">
+                                                <label for="ill_1" class="custom-control-label">B型肝炎</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="ill" id="ill_2" type="checkbox"  
+                                                    class="custom-control-input" value="C型肝炎">
+                                                <label for="ill_2" class="custom-control-label">C型肝炎</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="ill" id="ill_3" type="checkbox"  
+                                                    class="custom-control-input" value="暈針">
+                                                <label for="ill_3" class="custom-control-label">暈針</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="ill" id="ill_4" type="checkbox"  
+                                                    class="custom-control-input" value="高血壓">
+                                                <label for="ill_4" class="custom-control-label">高血壓</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="ill" id="ill_5" type="checkbox"  
+                                                    class="custom-control-input" value="心臟病">
+                                                <label for="ill_5" class="custom-control-label">心臟病</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="ill" id="ill_6" type="checkbox"  
+                                                    class="custom-control-input" value="胃病">
+                                                <label for="ill_6" class="custom-control-label">胃病</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="ill" id="ill_7" type="checkbox"  
+                                                    class="custom-control-input" value="慢性阻塞肺病">
+                                                <label for="ill_7" class="custom-control-label">慢性阻塞肺病</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="ill" id="ill_8" type="checkbox"  
+                                                    class="custom-control-input" value="肺結核">
+                                                <label for="ill_8" class="custom-control-label">肺結核</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="ill" id="ill_9" type="checkbox"  
+                                                    class="custom-control-input" value="腎臟病">
+                                                <label for="ill_9" class="custom-control-label">腎臟病</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="ill" id="ill_10" type="checkbox"  
+                                                    class="custom-control-input" value="腦中風">
+                                                <label for="ill_10" class="custom-control-label">腦中風</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="ill" id="ill_11" type="checkbox"  
+                                                    class="custom-control-input" value="癌症">
+                                                <label for="ill_11" class="custom-control-label">癌症</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">個人史（飲食）</label>
+                                    <div class="col-8">
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="food" id="food_0" type="checkbox"  
+                                                    class="custom-control-input" value="素食">
+                                                <label for="food_0" class="custom-control-label">素食</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="food" id="food_1" type="checkbox"  
+                                                    class="custom-control-input" value="葷食">
+                                                <label for="food_1" class="custom-control-label">葷食</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="food" id="food_2" type="checkbox"  
+                                                    class="custom-control-input" value="辛辣">
+                                                <label for="food_2" class="custom-control-label">辛辣</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="food" id="food_3" type="checkbox"  
+                                                    class="custom-control-input" value="冷飲">
+                                                <label for="food_3" class="custom-control-label">冷飲</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="form-group row">
+                                    <label class="col-4">個人史（抽菸）</label>
+                                    <div class="col-8">
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input name="smoke" id="smoke_0" type="radio" class="custom-control-input"
+                                                value="無" required="required">
+                                            <label for="smoke_0" class="custom-control-label">無</label>
+                                        </div>
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input name="smoke" id="smoke_1" type="radio" class="custom-control-input"
+                                                value="有" required="required">
+                                            <label for="smoke_1" class="custom-control-label">有</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="form-group row">
+                                    <label for="allergic" class="col-4 col-form-label">個人史（過敏）</label>
+                                    <div class="col-8">
+                                        <input id="allergic" name="allergic" placeholder="過敏原" type="text"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="form-group row">
+                                    <label for="alcohol" class="col-4 col-form-label">個人史（飲酒）</label>
+                                    <div class="col-8">
+                                        <input id="alcohol" name="alcohol" placeholder="瓶／天" type="text"
+                                            class="form-control" required="required">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">家族病史</label>
+                                    <div class="col-8">
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="family" id="family_0" type="checkbox"
+                                                    class="custom-control-input" value="糖尿病">
+                                                <label for="family_0" class="custom-control-label">糖尿病</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="family" id="family_1" type="checkbox"
+                                                    class="custom-control-input" value="高血壓">
+                                                <label for="family_1" class="custom-control-label">高血壓</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="family" id="family_2" type="checkbox"
+                                                    class="custom-control-input" value="心臟病">
+                                                <label for="family_2" class="custom-control-label">心臟病</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="family" id="family_3" type="checkbox"
+                                                    class="custom-control-input" value="胃病">
+                                                <label for="family_3" class="custom-control-label">胃病</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="family" id="family_4" type="checkbox"
+                                                    class="custom-control-input" value="腦中風">
+                                                <label for="family_4" class="custom-control-label">腦中風</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="family" id="family_5" type="checkbox"
+                                                    class="custom-control-input" value="癌症">
+                                                <label for="family_5" class="custom-control-label">癌症</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="family" id="family_6" type="checkbox"
+                                                    class="custom-control-input" value="氣喘">
+                                                <label for="family_6" class="custom-control-label">氣喘</label>
+                                            </div>
+                                        </div>
+                                        <div class="custom-controls-stacked">
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="family" id="family_7" type="checkbox"
+                                                    class="custom-control-input" value=" 鼻過敏">
+                                                <label for="family_7" class="custom-control-label">鼻過敏</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="form-group row">
+                                    <div class="offset-4 col-8">
+                                        <!-- <input type="submit" value="註冊"> -->
+                                    </div>
+                                </div>
+                            </form>
+                            <button name="submit" class="btn btn-primary" onclick="send();">註冊</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function send(){
+            let arr = $('#signup').serializeArray();
+            let data = {};
+
+            arr.forEach((item) => {
+                data[item.name] = item.value;
+            });
+
+            let ill = [];
+            $('input[name="ill"]:checked').each(function(){
+                ill.push($(this).val());
+            });
+            data['ill'] = ill;
+            let food = [];
+            $('input[name="food"]:checked').each(function(){
+                food.push($(this).val());
+            });
+            data['food'] = food;
+            let family = [];
+            $('input[name="family"]:checked').each(function(){
+                family.push($(this).val());
+            });
+            data['family'] = family;
+
+            axios.post('/api/signup', data)
+                .then((res) => {
+                    if (res.data.message == "Login successful") {
+                        alert("water");
+                    }
+                    else if (res.data.message == "Invalid credentials") {
+                        alert("Invalid credentials");
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                })
+        }
+    </script>
+</body>
+
+</html>
