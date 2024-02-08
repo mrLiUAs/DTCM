@@ -71,8 +71,13 @@ def signup():
 @app.route("/api/signup", methods=["POST"])
 def api_signup():
     try:
+        req = dict(request.get_json())
         data = {}
-        data["info"] = dict(request.get_json())
+        data["username"] = req["username"]
+        req.pop("username")
+        data["email"] = req["email"]
+        req.pop("email")
+        data["info"] = req
 
         data["oncall"] = False
         data["doctor"] = "None"
