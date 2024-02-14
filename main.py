@@ -161,6 +161,7 @@ def api_online():
 def api_match_doctor():
     name = request.args.get("name")
     pat = mongo.db.users.find_one({"username": name})
+    cc = request.args.get("cc")
     doctor = pat["doctor"]
     if doctor != "None":
         return jsonify({"doctor": doctor})
@@ -168,7 +169,7 @@ def api_match_doctor():
         doctor = mongo.db.doctors.find_one({"online": True})
         if doctor and not mongo.db.users.find_one({"username": name})["oncall"]:
             mongo.db.users.update_one({"username": name}, {"$set": {"doctor": doctor["username"]}})
-            mongo.db.doctors.update_one({"username": doctor["username"]}, {"$push": {"patients": {"name": name, "time": datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")}}})
+            mongo.db.doctors.update_one({"username": doctor["username"]}, {"$push": {"patients": {"name": name, "time": datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S"), "cc": cc}}})
             return jsonify({"doctor": doctor["username"], "room": pat["room"], "oncall": pat["oncall"]})
         else:
             return jsonify({"doctor": "None", "room": pat["room"], "oncall": pat["oncall"]})

@@ -27,7 +27,7 @@
             margin-top: 0;
         }
 
-        button {
+        #exit {
             background-color: red;
             color: #fff;
             border: none;
@@ -36,7 +36,7 @@
             cursor: pointer;
         }
 
-        button:hover {
+        #exit:hover {
             background-color: darkred;
         }
     </style>
@@ -44,15 +44,35 @@
 
 <body>
     <div class="container">
-        <h1 id="title"></h1>
-        <button onclick="exit()">退出</button>
+        <h1 id="title">請輸入主訴</h1>
+        <div id="cc_input">
+            <input type="text" id="cc">
+            <button onclick="sendCC();">送出</button>
+        </div>
+        <br>
+        <button id="exit" onclick="exit()">退出</button>
     </div>
 
     <script src="/static/js/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
     <script>
+        ok = false;
+        cc = "";
+
+        function sendCC(){
+            if($("#cc").val() == ""){
+                alert("請輸入主訴");
+                return;
+            }
+
+            cc = $("#cc").val();
+            $("#cc_input").hide();
+            ok = true;
+        }
+
         function update() {
-            axios.get("/api/match_doctor?name={{ patientName }}")
+            if(!ok) return;
+            axios.get(`/api/match_doctor?name={{ patientName }}&cc=${cc}`)
                 .then(res => {
                     console.log(res);
                     doctorName = res.data.doctor;
@@ -63,7 +83,7 @@
                         $("#title").text(`醫師尋找中...`);
                     }
                     else{
-                        $("#title").text(`候診中「${doctorName}」`);
+                        $("#title").text(`候診中「${doctorName}」 -  ${cc}`);
                     }
                 })
                 .catch(err => {
