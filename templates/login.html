@@ -78,7 +78,7 @@
         <br>
         <button id="reg_button" onclick="window.location.href = '/signup'">Sign up</button>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script src="/static/js/axios.min.js"></script>
     <script>
         document.querySelector('#username').addEventListener('keyup', (e) => {
             if (e.keyCode === 13) {
@@ -93,7 +93,7 @@
             })
                 .then((res) => {
                     if (res.data.message == "Login successful") {
-                        window.location.href = `/wait?name=${username}`;
+                        window.location.href = `/mode?name=${username}`;
                     }
                     else if (res.data.message == "Invalid credentials") {
                         alert("Invalid credentials");
@@ -102,34 +102,6 @@
                 .catch((err) => {
                     console.error(err);
                 })
-
-
-            // Perform the POST request to /api/login
-            /*
-            fetch('/api/login', {
-                method: 'POST',
-                body: JSON.stringify({
-                    username: document.querySelector('input[type="text"]').value,
-                    // password: document.querySelector('input[type="password"]').value
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(res => {
-                // console.log(res.json());
-                console.log(res.json);
-            })
-            // .then(response => response.json())
-            // .then(data => {
-            //     // Handle the response data
-            //     console.log(data);
-            // })
-            .catch(error => {
-                // Handle any errors
-                console.error(error);
-            });
-            */
         }
     </script>
 </body>

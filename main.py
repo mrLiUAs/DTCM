@@ -92,7 +92,13 @@ def api_signup():
         return abort(404)
 
 
+@app.route("/mode", methods=["GET", "POST"])
+def mode():
+    return render_template("mode.html", patientName=request.args.get("name"))
 
+@app.route("/ai", methods=["GET", "POST"])
+def ai():
+    return render_template("ai.html", patientName=request.args.get("name"))
     
 @app.route("/doctor", methods=["GET", "POST"])
 def doctor():
@@ -210,6 +216,33 @@ def api_med():
             return abort(404)
     # except:
     #     return abort(404)
+        
+pulse = {}
+        
+@app.route("/api/upload", methods=["POST"])
+def api_upload():
+    try:
+        room = request.json.get("room")
+        data = request.json.get("data")
+
+        if room is not None and data is not None:
+            pulse[room] = {"data": data, "date": datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")}
+            return jsonify({"message": "ok"})
+        else:
+            return abort(404)
+    except:
+        return abort(404)
+
+@app.route("/api/get_pulse", methods=["GET"])
+def api_get_pulse():
+    try:
+        room = request.args.get("room")
+        if room is not None:
+            return jsonify(pulse.get(room, "None"))
+        else:
+            return abort(404)
+    except:
+        return abort(404)
 
 if __name__ == "__main__":
     app.run(debug=True, port=3000)

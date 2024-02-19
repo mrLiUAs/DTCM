@@ -11,7 +11,6 @@
     }
   </style>
   <script src="/static/js/jquery-3.7.1.min.js"></script>
-  <script src="/static/js/serial.js"></script>
   <!-- <script src="/static/js/index.js"></script> -->
   <link rel="stylesheet" href="/static/css/bootstrap.min.css">
 </head>
@@ -19,7 +18,43 @@
 <body style="background-color: black;">
   <div id="jaas-container"></div>
 
-  <!-- modal -->
+  <!-- patient_pulse modal -->
+  <div class="modal fade" role="dialog" tabindex="-1" id="patient_pulse">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">錄製脈象</h4><button class="btn-close" type="button" aria-label="Close"
+            data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>錄製一分鐘長的脈象供你的中醫師診斷<br>此功能需搭配脈診器。</p>
+          <p id="last_record">上次錄製：尚未</p>
+          <button id="connect" onclick="connect();">連接裝置</button>
+          <button class="btn btn-primary" type="button" onclick="record();">開始</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- doctor_pulse modal -->
+  <div class="modal fade" role="dialog" tabindex="-1" id="doctor_pulse">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">病患脈象</h4><button class="btn-close" type="button" aria-label="Close"
+            data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p id="last_upload">病患上次上傳：無</p>
+          <button id="connect" onclick="connect_doctor();">連接裝置</button>
+          <button onclick="load_pulse();">重新載入</button>
+          <div id="pulse_list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- med modal -->
   <div class="modal fade" role="dialog" tabindex="-1" id="med">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -41,45 +76,57 @@
   </div>
 
   <script src="/static/js/bootstrap.min.js"></script>
+
   <script src="/static/js/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+
+  <script src="/static/js/serial.js"></script>
+  <script src="/static/js/device_handler.js"></script>
+
+  <script src="/static/js/axios.min.js"></script>
   <script>
+    room = "{{ room }}";
+
     window.onload = () => {
       const options = {
         configOverwrite: { toolbarButtons: ['hangup', 'microphone', 'camera'], },
       };
 
       // api
-      if ("{{ doctorName }}" == "None") {
+      if ("{{ doctorName }}" == "None") { // patient
         api = new JitsiMeetExternalAPI("8x8.vc", {
           roomName: "vpaas-magic-cookie-8bcaab30a250420888f31a7dc45b57b9/{{ room }}",
-          // roomName: `vpaas-magic-cookie-8bcaab30a250420888f31a7dc45b57b9/${$("#room").val()}`,
           parentNode: document.querySelector('#jaas-container'),
           configOverwrite: {
-            toolbarButtons: ['hangup', 'microphone', 'camera', 'pulse'],
+            toolbarButtons: ['hangup', 'microphone', 'camera', 'patient_pulse'],
             customToolbarButtons: [
               {
                 icon: 'https://svgshare.com/i/12XZ.svg',
                 // icon: './assets/images/pulse.svg',
-                id: 'pulse',
+                id: 'patient_pulse',
                 text: 'Pulse diagnosis'
               }
             ],
           },
         });
       }
-      else {
+      else { // doctor
         api = new JitsiMeetExternalAPI("8x8.vc", {
           roomName: "vpaas-magic-cookie-8bcaab30a250420888f31a7dc45b57b9/{{ room }}",
           // roomName: `vpaas-magic-cookie-8bcaab30a250420888f31a7dc45b57b9/${$("#room").val()}`,
           parentNode: document.querySelector('#jaas-container'),
           configOverwrite: {
-            toolbarButtons: ['hangup', 'microphone', 'camera', 'med'],
+            toolbarButtons: ['hangup', 'microphone', 'camera', 'med', 'doctor_pulse'],
             customToolbarButtons: [
               {
                 icon: 'https://svgshare.com/i/12ZS.svg',
                 id: 'med',
                 text: 'Medication'
+              },
+              {
+                icon: 'https://svgshare.com/i/12XZ.svg',
+                // icon: './assets/images/pulse.svg',
+                id: 'doctor_pulse',
+                text: '病患脈診'
               }
             ],
           },
@@ -91,6 +138,12 @@
         key = res["key"];
         if (key == "med") {
           $("#med").modal("show");
+        }
+        else if (key == "patient_pulse") {
+          $("#patient_pulse").modal("show");
+        }
+        else if (key == "doctor_pulse") {
+          $("#doctor_pulse").modal("show");
         }
       });
     }
@@ -106,7 +159,7 @@
           .then(res => {
             console.log(res);
             alert("傳送成功");
-            if(close) window.close();
+            if (close) window.close();
           })
           .catch(err => {
             console.error(err);

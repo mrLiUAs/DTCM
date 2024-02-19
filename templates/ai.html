@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>DTCM AI舌診</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+</head>
+
+<body>
+    <section class="py-4 py-xl-5">
+        <div class="container">
+            <div class="text-center p-4 p-lg-5">
+                <p class="fw-bold text-primary mb-2">線上AI診斷</p>
+                <h1 class="fw-bold mb-4">AI舌診診斷</h1>
+                <h3 id="hello" style="color: var(--bs-gray-700)"></h3>
+                <br><br>
+                <input id="photo" type="file" style="margin-right: 1rem;" accept="image/png, image/jpeg"><button
+                    class="btn btn-primary fs-5 me-2 py-2 px-4" type="button">上傳舌頭照片</button>
+            </div>
+        </div>
+    </section>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/jquery-3.7.1.min.js"></script>
+    <script>
+        const now = new Date();
+        const hour = now.getHours();
+
+        if (hour >= 6 && hour < 12){
+            $("#hello").text("早安，{{ patientName }}");
+        }
+        else if (hour == 12){
+            $("#hello").text("午安，{{ patientName }}");
+        }
+        else if (hour > 12 && hour < 18){
+            $("#hello").text("下午好，{{ patientName }}");
+        }
+        else{
+            $("#hello").text("晚上好，{{ patientName }}");
+        }
+    </script>
+</body>
+
+</html>
