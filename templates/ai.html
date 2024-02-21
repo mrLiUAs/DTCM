@@ -16,28 +16,63 @@
                 <h1 class="fw-bold mb-4">AI舌診診斷</h1>
                 <h3 id="hello" style="color: var(--bs-gray-700)"></h3>
                 <br><br>
-                <input id="photo" type="file" style="margin-right: 1rem;" accept="image/png, image/jpeg"><button
-                    class="btn btn-primary fs-5 me-2 py-2 px-4" type="button">上傳舌頭照片</button>
+                <input id="photo" type="file" style="margin-right: 1rem;" accept="image/png, image/jpeg">
+                <button class="btn btn-primary fs-5 me-2 py-2 px-4" type="button" onclick="upload();">上傳舌頭照片</button>
+                <br>
+                <img style="width: 40%;">
             </div>
         </div>
     </section>
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/jquery-3.7.1.min.js"></script>
+    <script src="/static/js/axios.min.js"></script>
     <script>
-        const now = new Date();
-        const hour = now.getHours();
+        window.onload = () => {
+            const now = new Date();
+            const hour = now.getHours();
 
-        if (hour >= 6 && hour < 12){
-            $("#hello").text("早安，{{ patientName }}");
+            if (hour >= 6 && hour < 12) {
+                $("#hello").text("早安，{{ patientName }}");
+            }
+            else if (hour == 12) {
+                $("#hello").text("午安，{{ patientName }}");
+            }
+            else if (hour > 12 && hour < 18) {
+                $("#hello").text("下午好，{{ patientName }}");
+            }
+            else {
+                $("#hello").text("晚上好，{{ patientName }}");
+            }
         }
-        else if (hour == 12){
-            $("#hello").text("午安，{{ patientName }}");
-        }
-        else if (hour > 12 && hour < 18){
-            $("#hello").text("下午好，{{ patientName }}");
-        }
-        else{
-            $("#hello").text("晚上好，{{ patientName }}");
+
+        $("#photo").change(function () {
+            const file = this.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                $("img").attr("src", e.target.result);
+            }
+
+            reader.readAsDataURL(file);
+        });
+
+        function upload() {
+            const file = $("#photo")[0].files[0];
+            const formData = new FormData();
+            formData.append("data", file);
+
+            axios.post("/test", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            })
+            .then((res) => {
+                console.log(res.data);
+                alert("上傳成功！")
+            })
+            .catch((err) => {
+                console.error(err);
+            });
         }
     </script>
 </body>

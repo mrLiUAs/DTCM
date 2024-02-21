@@ -2,6 +2,7 @@ import os
 import datetime
 import random
 import requests
+from PIL import Image
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, abort
 from flask import render_template, url_for, redirect, session, flash
@@ -42,7 +43,8 @@ def data():
 
 @app.route("/test", methods=["GET", "POST"])
 def test():
-    print(request.get_json())
+    img = Image.open(request.files["data"])
+
     return "ok"
 
 @app.route("/ttt", methods=["GET", "POST"])
