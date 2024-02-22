@@ -1,0 +1,6 @@
+#line 1 "C:\\Users\\Stanley\\OneDrive\\桌面\\program\\arduino\\pulseReceive\\.vscode\\arduino.json"
+{
+    "sketch": "pulseReceive.ino",
+    "output": "build",
+    "board": "arduino:avr:leonardo"
+}

@@ -1,0 +1,6 @@
+{
+    "sketch": "pulseReceive.ino",
+    "output": "build",
+    "board": "arduino:avr:leonardo",
+    "programmer": "avrisp"
+}
