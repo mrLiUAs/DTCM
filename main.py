@@ -8,6 +8,7 @@ from flask import Flask, request, jsonify, abort
 from flask import render_template, url_for, redirect, session, flash
 from flask_pymongo import PyMongo
 from mail import send_mail
+from AI import diagnose
 
 load_dotenv()
 
@@ -243,6 +244,14 @@ def api_get_pulse():
             return jsonify(pulse.get(room, "None"))
         else:
             return abort(404)
+    except:
+        return abort(404)
+
+@app.route("/api/diagnose", methods=["POST"])
+def api_diagnose():
+    try:
+        img = Image.open(request.files["data"])
+        return {"data": diagnose(img)}
     except:
         return abort(404)
 

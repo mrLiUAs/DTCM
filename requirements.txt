@@ -1,2 +1,6 @@
 requests
 Pillow
+python-dotenv
+flask
+Flask-PyMongo
+ultralytics

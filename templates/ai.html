@@ -19,7 +19,38 @@
                 <input id="photo" type="file" style="margin-right: 1rem;" accept="image/png, image/jpeg">
                 <button class="btn btn-primary fs-5 me-2 py-2 px-4" type="button" onclick="upload();">上傳舌頭照片</button>
                 <br>
-                <img style="width: 40%;">
+                <img style="margin: 1rem; width: 10%;">
+            </div>
+            <div id="result" style="margin: 3rem; display: none;">
+                <h4>結果</h4>
+                <div class="table-responsive" style="margin: 0px;padding: 0px;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><br>表里</th>
+                                <th><br>寒熱</th>
+                                <th><br>虛實</th>
+                                <th><br>陰陽</th>
+                                <th><br>病位</th>
+                                <th><br>六淫</th>
+                                <th><br>輕重</th>
+                                <th><br>備­­註</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="c1"></td>
+                                <td id="c2"></td>
+                                <td id="c3"></td>
+                                <td id="c4"></td>
+                                <td id="c5"></td>
+                                <td id="c6"></td>
+                                <td id="c7"></td>
+                                <td id="c8"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </section>
@@ -27,6 +58,7 @@
     <script src="/static/js/jquery-3.7.1.min.js"></script>
     <script src="/static/js/axios.min.js"></script>
     <script>
+        let diag;
         window.onload = () => {
             const now = new Date();
             const hour = now.getHours();
@@ -61,18 +93,32 @@
             const formData = new FormData();
             formData.append("data", file);
 
-            axios.post("/test", formData, {
+            alert("正在計算，請勿重新載入頁面")
+            axios.post("/api/diagnose", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
             })
             .then((res) => {
-                console.log(res.data);
-                alert("上傳成功！")
+                alert("已完成！");
+                diag = res.data.data;
+                updateDiag();
             })
             .catch((err) => {
                 console.error(err);
             });
+        }
+
+        function updateDiag() {
+            $("#result").show();
+            $("#c1").text(diag["表里"]);
+            $("#c2").text(diag["寒熱"]);
+            $("#c3").text(diag["虛實"]);
+            $("#c4").text(diag["陰陽"]);
+            $("#c5").text(diag["病位"]);
+            $("#c6").text(diag["六淫"]);
+            $("#c7").text(diag["輕重"]);
+            $("#c8").text(diag["備註"]);
         }
     </script>
 </body>

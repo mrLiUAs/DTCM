@@ -31,10 +31,10 @@ function connect() {
                 port.onReceive = data => {
                     let textDecoder = new TextDecoder();
                     // alert(textDecoder.decode(data));
-                    alert("已完成錄製脈像");
                     // FILEPATH: /Users/jason/Coding/DTCM/static/js/device_handler.js
                     $("#last_record").html("上次錄製：" + formatDate(new Date()));
-
+                    alert("已完成錄製脈像");
+                    
                     axios.post("/api/upload", {
                         room: room,
                         data: textDecoder.decode(data)
@@ -73,7 +73,7 @@ function connect_doctor() {
             port = selectedPort;
             port.connect().then(() => {
                 console.log(port + ' connected.');
-                $("#connect").html('取消連接');
+                $("#connect_doctor").html('取消連接');
                 port.onReceive = data => {
                     let textDecoder = new TextDecoder();
                     // alert(textDecoder.decode(data));
@@ -108,6 +108,7 @@ function connect_doctor() {
 }
 
 function record() {
+    console.log("started recording");
     if (port) {
         port.send(new TextEncoder().encode('s')).then(() => {
             alert("已開始錄製脈像，請靜候一分鐘");
@@ -126,14 +127,15 @@ let pulse;
 
 function load_pulse() {
     axios.get(`/api/get_pulse?room=${room}`).then(res => {
-        $("#last_upload").html("病患上次上傳：" + res.data.date);
         $("#pulse_list").html(`
+        <br>
         <div class="card">
-            <div class="card-body">
-                <h6 class="text-muted card-subtitle mb-2">2024/2/13 16:58:21</h6><button class="btn btn-primary" type="button" onclick="play();">播放</button>
-            </div>
+        <div class="card-body">
+        <h6 id="last_upload" class="text-muted card-subtitle mb-2">2024/2/13 16:58:21</h6><button class="btn btn-primary" type="button" onclick="play();">播放</button>
+        </div>
         </div>
         `)
+        $("#last_upload").html(res.data.date);
         // $("#pulse").html(response.data);
         pulse = res.data.data;
     }).catch(error => {
