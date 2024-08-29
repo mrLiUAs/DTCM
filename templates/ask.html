@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>DTCM</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+</head>
+
+<body>
+    <section class="py-4 py-xl-5">
+        <div class="container">
+            <div class="text-center p-4 p-lg-5">
+                <p class="fw-bold text-primary mb-2">歡迎回來</p>
+                <h1 class="fw-bold mb-4">請選擇你的主訴（可複選）</h1>
+            </div>
+        </div>
+    </section>
+
+    <h5 id="cc-list"></h5>
+
+    <div>
+        <ul class="nav nav-tabs" role="tablist">
+            {% for key in cc.keys() %}
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#{{ key }}">{{ key }}</a></li>
+            {% endfor %}
+        </ul>
+        
+        <!-- <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#pain">疼痛</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#consciousness">神智</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#course">病程</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#reproductive-female">生殖（女）</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#reproductive-male"><span style="color: var(--bs-nav-link-hover-color);">生殖（男）</span></a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#facial">臉面</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#swelling">腫脹</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#temperature">寒熱</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#head">頭</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#chest">胸</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#abdomen">腹</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#ear">耳</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#nose">鼻</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#phlegm">痰</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#mouth">口</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#throat">咽喉</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#eye">眼</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#excretion">排遺</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#urination">排尿</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#sweating">出汗</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#diet">飲食</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#other">其他</a></li>
+        </ul> -->
+        
+        <div class="tab-content">
+            {% for key, val in cc.items() %}
+            {% if key != '疼痛' %}
+            <div class="tab-pane" role="tabpanel" id="{{ key }}">
+                {% for k, v in val.items() %}
+                <button class="btn btn-light" id="{{ naming[k] }}" onclick="addItem('{{ k }}', '{{ naming[k] }}')" data-toggle="tooltip" data-placement="top" title="{{ v }}">{{ k }}</button>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- <div class="tab-content">
+            <div class="tab-pane active" role="tabpanel" id="pain">
+                <p>Content for tab 1.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="consciousness">
+                <p>Content for tab 2.</p>
+                <button class="btn btn-light" onclick="">心煩</button>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="course">
+                <p>Content for tab 3.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="reproductive-female">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="reproductive-male">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="facial">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="swelling">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="temperature">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="head">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="chest">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="abdomen">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="ear">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="nose">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="phlegm">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="mouth">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="throat">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="eye">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="excretion">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="urination">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="sweating">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="diet">
+                <p>Tab content.</p>
+            </div>
+            <div class="tab-pane" role="tabpanel" id="other"></div>
+                <p>Tab content.</p>
+            </div>
+        </div> -->
+    </div>
+
+    <center><img width="30%" src="static/img/body_pic.png" alt="A picture of the body"></center>
+
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/bs-init.js"></script>
+    <script src="/static/js/jquery-3.7.1.min.js"></script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+
+        chose = [];
+
+        function addItem(item, id){
+            if (chose.includes(item)){
+                chose.splice(chose.indexOf(item), 1);
+                $('#' + id).attr('class', 'btn btn-light');
+            } else {
+                chose.push(item);
+                chose.sort();
+                $('#' + id).attr('class', 'btn btn-dark');
+            }
+
+            $('#cc-list').text(chose.join(', '));
+        }
+    </script>
+</body>
+
+</html>

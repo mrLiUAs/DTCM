@@ -1,6 +1,8 @@
+python-dotenv
 requests
 Pillow
 python-dotenv
 flask
 Flask-PyMongo
+opencv-python
 ultralytics

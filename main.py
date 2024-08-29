@@ -7,8 +7,9 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify, abort
 from flask import render_template, url_for, redirect, session, flash
 from flask_pymongo import PyMongo
+from bson.objectid import ObjectId
 from mail import send_mail
-from AI import diagnose
+# from AI import diagnose
 
 load_dotenv()
 
@@ -40,12 +41,6 @@ def index():
 def data():
     if request.method == "POST":
         print(request.get_json())
-    return "ok"
-
-@app.route("/test", methods=["GET", "POST"])
-def test():
-    img = Image.open(request.files["data"])
-
     return "ok"
 
 @app.route("/ttt", methods=["GET", "POST"])
@@ -246,7 +241,7 @@ def api_get_pulse():
             return abort(404)
     except:
         return abort(404)
-
+'''
 @app.route("/api/diagnose", methods=["POST"])
 def api_diagnose():
     try:
@@ -254,6 +249,28 @@ def api_diagnose():
         return {"data": diagnose(img)}
     except:
         return abort(404)
+'''
+
+@app.route("/de", methods=["GET", "POST"])
+def test():
+    cc = dict(mongo.db.cc.find_one({"_id": ObjectId("66d03a623a09da928a34c0a4")}))
+    cc.pop("_id")
+
+    return render_template("test.html", **{"name": "test"}, cc=cc)
+
+@app.route("/ask", methods=["GET", "POST"])
+def ask():
+    cc = dict(mongo.db.cc.find_one({"_id": ObjectId("66d03a623a09da928a34c0a4")}))
+    cc.pop("_id")
+
+    naming = {}
+    num = 1
+    for val in cc.values():
+        for k in val.keys():
+            naming[k] = "sick-" + str(num)
+            num += 1
+
+    return render_template("ask.html", cc=cc, naming=naming)
 
 if __name__ == "__main__":
     app.run(debug=True, port=3000)
