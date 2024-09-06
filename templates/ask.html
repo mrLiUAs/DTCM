@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>DTCM</title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="/static/css/bootstrap-icons.min.css"> -->
 </head>
 
 <body>
@@ -18,9 +19,10 @@
         </div>
     </section>
 
-    <h5 id="cc-list"></h5>
-
-    <div>
+    
+    <div style="padding-left: 3rem; padding-right: 3rem;">
+        <button onclick="clearItems()" id="clear-btn" class="btn btn-secondary" style="display: none; margin-bottom: 0.5rem;">Clear</button>
+        <h5 id="cc-list"></h5>
         <ul class="nav nav-tabs" role="tablist">
             {% for key in cc.keys() %}
             <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#{{ key }}">{{ key }}</a></li>
@@ -53,12 +55,24 @@
         </ul> -->
         
         <div class="tab-content">
+            <br>
             {% for key, val in cc.items() %}
             {% if key != '疼痛' %}
             <div class="tab-pane" role="tabpanel" id="{{ key }}">
                 {% for k, v in val.items() %}
-                <button class="btn btn-light" id="{{ naming[k] }}" onclick="addItem('{{ k }}', '{{ naming[k] }}')" data-toggle="tooltip" data-placement="top" title="{{ v }}">{{ k }}</button>
+                <button class="btn btn-light" id="{{ naming[k] }}" onclick="addItem('{{ k }}')" data-toggle="tooltip" data-placement="top" title="{{ v }}">{{ k }}</button>
                 {% endfor %}
+            </div>
+            {% else %}
+            <div class="tab-pane" role="tabpanel" id="{{ key }}">
+            {% for k, v in val.items() %}
+                <h5>請選擇{{ k }}</h5>
+                {% for i, j in v.items() %}
+                <button class="btn btn-light" id="{{ naming[i] }}" onclick="addHurt('{{ i }}', '{{ k }}')" data-toggle="tooltip" data-placement="top" title="{{ j }}">{{ i }}</button>
+                {% endfor %}
+                <br><br>
+            {% endfor %}
+            <button onclick="if(hurt[0] != '' && hurt[1] != '') { addItem(hurt.join('')) }" class="btn btn-primary">選擇</button>
             </div>
             {% endif %}
             {% endfor %}
@@ -147,9 +161,48 @@
         })
 
         chose = [];
+        naming = JSON.parse('{{ naming | tojson | safe }}');
 
-        function addItem(item, id){
-            if (chose.includes(item)){
+        hurt = ["", ""];
+        hurtCnt = 1;
+
+        function addHurt(item, type){
+            if(type == "部位"){
+                type = 0;
+            }
+            else{
+                type = 1;
+            }
+
+            if(item == hurt[type]){
+                $("#" + naming[item]).attr('class', 'btn btn-light');
+                hurt[type] = "";
+            }
+            else {
+                if(hurt[type] != ""){
+                    $("#" + naming[hurt[type]]).attr('class', 'btn btn-light');
+                }
+                $("#" + naming[item]).attr('class', 'btn btn-dark');
+                hurt[type] = item;
+            } 
+        }
+
+        function addItem(item){
+            if(naming[item] == undefined){
+                id = "hurt-" + hurtCnt;
+                hurtCnt += 1;
+            }
+            else{
+                id = naming[item];
+            }
+
+            if(id.includes('hurt')){
+                $("#" + naming[hurt[0]]).attr('class', 'btn btn-light');
+                $("#" + naming[hurt[1]]).attr('class', 'btn btn-light');
+                hurt = ["", ""];
+            }
+
+            if (chose.includes(item)){ // delete
                 chose.splice(chose.indexOf(item), 1);
                 $('#' + id).attr('class', 'btn btn-light');
             } else {
@@ -159,6 +212,29 @@
             }
 
             $('#cc-list').text(chose.join(', '));
+
+            if(chose.length > 0){
+                $("#clear-btn").show();
+            }
+            else{
+                $("#clear-btn").hide();
+            }
+        }
+
+        function delItem(item){
+            chose.splice(chose.indexOf(item), 1);
+            $('#cc-list').text(chose.join(', '));
+        }
+
+        function clearItems(){
+            for (let i=0; i<chose.length; i++){
+                let id = chose[i];
+                $('#' + naming[id]).attr('class', 'btn btn-light');
+            }
+
+            chose = [];
+            $('#cc-list').text('');
+            $("#clear-btn").hide();
         }
     </script>
 </body>

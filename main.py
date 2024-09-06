@@ -266,9 +266,14 @@ def ask():
     naming = {}
     num = 1
     for val in cc.values():
-        for k in val.keys():
-            naming[k] = "sick-" + str(num)
-            num += 1
+        for k, v in val.items():
+            if type(v) == dict:
+                for i in v.keys():
+                    naming[i] = "sick-" + str(num)
+                    num += 1
+            else:
+                naming[k] = "sick-" + str(num)
+                num += 1
 
     return render_template("ask.html", cc=cc, naming=naming)
 
