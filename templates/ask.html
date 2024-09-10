@@ -10,146 +10,63 @@
 </head>
 
 <body>
-    <section class="py-4 py-xl-5">
-        <div class="container">
-            <div class="text-center p-4 p-lg-5">
-                <p class="fw-bold text-primary mb-2">歡迎回來</p>
-                <h1 class="fw-bold mb-4">請選擇你的主訴（可複選）</h1>
+    <div class="px-5">
+        <section class="py-4 py-xl-5">
+            <div class="container">
+                <div class="text-center p-4 p-lg-5">
+                    <p class="fw-bold text-primary mb-2">歡迎回來</p>
+                    <h1 class="fw-bold mb-4">請選擇你的主訴（可複選）</h1>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    
-    <div style="padding-left: 3rem; padding-right: 3rem;">
-        <button onclick="clearItems()" id="clear-btn" class="btn btn-secondary" style="display: none; margin-bottom: 0.5rem;">Clear</button>
-        <h5 id="cc-list"></h5>
-        <ul class="nav nav-tabs" role="tablist">
-            {% for key in cc.keys() %}
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#{{ key }}">{{ key }}</a></li>
-            {% endfor %}
-        </ul>
-        
-        <!-- <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#pain">疼痛</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#consciousness">神智</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#course">病程</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#reproductive-female">生殖（女）</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#reproductive-male"><span style="color: var(--bs-nav-link-hover-color);">生殖（男）</span></a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#facial">臉面</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#swelling">腫脹</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#temperature">寒熱</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#head">頭</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#chest">胸</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#abdomen">腹</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#ear">耳</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#nose">鼻</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#phlegm">痰</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#mouth">口</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#throat">咽喉</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#eye">眼</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#excretion">排遺</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#urination">排尿</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#sweating">出汗</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#diet">飲食</a></li>
-            <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#other">其他</a></li>
-        </ul> -->
-        
-        <div class="tab-content">
-            <br>
-            {% for key, val in cc.items() %}
-            {% if key != '疼痛' %}
-            <div class="tab-pane" role="tabpanel" id="{{ key }}">
-                {% for k, v in val.items() %}
-                <button class="btn btn-light" id="{{ naming[k] }}" onclick="addItem('{{ k }}')" data-toggle="tooltip" data-placement="top" title="{{ v }}">{{ k }}</button>
+        <div style="height: 2rem; text-align: right;">
+        </div>
+        <br>
+        <div class="w-100 d-flex mb-2">
+            <button onclick="clearItems()" id="clear-btn" class="btn btn-secondary" style="display: none;">清除</button>
+            &nbsp;<h5 id="cc-list"></h5>
+            <button onclick="nextStep()" class="btn btn-outline-info ms-auto">下一步</button>
+        </div>
+        <div>
+
+            <ul class="nav nav-tabs" role="tablist">
+                {% for key in cc.keys() %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
+                        href="#{{ key }}">{{ key }}</a></li>
+                {% endfor %}
+            </ul>
+
+            <div class="tab-content">
+                <br>
+                {% for key, val in cc.items() %}
+                {% if key != '疼痛' %}
+                <div class="tab-pane" role="tabpanel" id="{{ key }}">
+                    {% for k, v in val.items() %}
+                    <button class="btn btn-light" id="{{ naming[k] }}" onclick="addItem('{{ k }}', '{{ key }}')"
+                        data-toggle="tooltip" data-placement="top" title="{{ v }}">{{ k }}</button>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="tab-pane" role="tabpanel" id="{{ key }}">
+                    {% for k, v in val.items() %}
+                    <h5>請選擇{{ k }}</h5>
+                    {% for i, j in v.items() %}
+                    <button class="btn btn-light" id="{{ naming[i] }}" onclick="addHurt('{{ i }}', '{{ k }}')"
+                        data-toggle="tooltip" data-placement="top" title="{{ j }}">{{ i }}</button>
+                    {% endfor %}
+                    <br><br>
+                    {% endfor %}
+                    <button onclick="addItem(hurt, '{{ key }}')" class="btn btn-primary">選擇</button>
+                </div>
+                {% endif %}
                 {% endfor %}
             </div>
-            {% else %}
-            <div class="tab-pane" role="tabpanel" id="{{ key }}">
-            {% for k, v in val.items() %}
-                <h5>請選擇{{ k }}</h5>
-                {% for i, j in v.items() %}
-                <button class="btn btn-light" id="{{ naming[i] }}" onclick="addHurt('{{ i }}', '{{ k }}')" data-toggle="tooltip" data-placement="top" title="{{ j }}">{{ i }}</button>
-                {% endfor %}
-                <br><br>
-            {% endfor %}
-            <button onclick="if(hurt[0] != '' && hurt[1] != '') { addItem(hurt.join('')) }" class="btn btn-primary">選擇</button>
-            </div>
-            {% endif %}
-            {% endfor %}
         </div>
 
-        <!-- <div class="tab-content">
-            <div class="tab-pane active" role="tabpanel" id="pain">
-                <p>Content for tab 1.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="consciousness">
-                <p>Content for tab 2.</p>
-                <button class="btn btn-light" onclick="">心煩</button>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="course">
-                <p>Content for tab 3.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="reproductive-female">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="reproductive-male">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="facial">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="swelling">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="temperature">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="head">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="chest">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="abdomen">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="ear">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="nose">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="phlegm">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="mouth">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="throat">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="eye">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="excretion">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="urination">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="sweating">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="diet">
-                <p>Tab content.</p>
-            </div>
-            <div class="tab-pane" role="tabpanel" id="other"></div>
-                <p>Tab content.</p>
-            </div>
-        </div> -->
+        <center><img width="40%" src="static/img/body_pic.png" alt="A picture of the body"></center>
+
     </div>
-
-    <center><img width="30%" src="static/img/body_pic.png" alt="A picture of the body"></center>
 
     <script src="/static/js/popper.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
@@ -160,81 +77,119 @@
             $('[data-toggle="tooltip"]').tooltip()
         })
 
-        chose = [];
+        chose = {};
         naming = JSON.parse('{{ naming | tojson | safe }}');
 
         hurt = ["", ""];
         hurtCnt = 1;
 
-        function addHurt(item, type){
-            if(type == "部位"){
+        function addHurt(item, type) {
+            if (type == "部位") {
                 type = 0;
             }
-            else{
+            else {
                 type = 1;
             }
 
-            if(item == hurt[type]){
+            if (item == hurt[type]) {
                 $("#" + naming[item]).attr('class', 'btn btn-light');
                 hurt[type] = "";
             }
             else {
-                if(hurt[type] != ""){
+                if (hurt[type] != "") {
                     $("#" + naming[hurt[type]]).attr('class', 'btn btn-light');
                 }
                 $("#" + naming[item]).attr('class', 'btn btn-dark');
                 hurt[type] = item;
-            } 
+            }
         }
 
-        function addItem(item){
-            if(naming[item] == undefined){
+        function addItem(item, type) {
+            let truth = [];
+            if (type == "疼痛") {
+                if (item[0] != "" && item[1] != "") {
+                    truth.push(item[0] + "痛");
+                    if(item[1] == "不確定") {
+                        item[1] = "";
+                    }
+                    truth.push(item.join(''));
+
+                    if(item[0] == "胃脘" || item[0] == "心臟") {
+                        truth.push("臟器" + item[1]);
+                    }
+                    if(item[0] == "痰"){
+                        truth.push("咳痰");
+                    }
+
+                    item = item.join('');
+                }
+                else {
+                    return;
+                }
+            }
+            else{
+                truth.push(item);
+            }
+
+
+            if (naming[item] == undefined) {
                 id = "hurt-" + hurtCnt;
                 hurtCnt += 1;
             }
-            else{
+            else {
                 id = naming[item];
             }
 
-            if(id.includes('hurt')){
+            if (type == "疼痛") {
                 $("#" + naming[hurt[0]]).attr('class', 'btn btn-light');
                 $("#" + naming[hurt[1]]).attr('class', 'btn btn-light');
                 hurt = ["", ""];
             }
 
-            if (chose.includes(item)){ // delete
-                chose.splice(chose.indexOf(item), 1);
+            if (chose[item] != undefined) { // delete
+                delete chose[item]
                 $('#' + id).attr('class', 'btn btn-light');
             } else {
-                chose.push(item);
-                chose.sort();
+                chose[item] = truth;
                 $('#' + id).attr('class', 'btn btn-dark');
             }
 
-            $('#cc-list').text(chose.join(', '));
+            $('#cc-list').text(Object.keys(chose).sort().join(', '));
 
-            if(chose.length > 0){
+            if (Object.keys(chose).length > 0) {
                 $("#clear-btn").show();
             }
-            else{
+            else {
                 $("#clear-btn").hide();
             }
         }
 
-        function delItem(item){
-            chose.splice(chose.indexOf(item), 1);
-            $('#cc-list').text(chose.join(', '));
-        }
-
-        function clearItems(){
-            for (let i=0; i<chose.length; i++){
-                let id = chose[i];
-                $('#' + naming[id]).attr('class', 'btn btn-light');
+        function clearItems() {
+            for (let k in chose) {
+                $('#' + naming[k]).attr('class', 'btn btn-light');
+                delete chose[k];
             }
 
-            chose = [];
             $('#cc-list').text('');
             $("#clear-btn").hide();
+        }
+
+        function nextStep() {
+            if (Object.keys(chose).length == 0) {
+                alert('請選擇主訴');
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/ask',
+                data: {
+                    'cc': chose
+                },
+                success: function (data) {
+                    window.location.href = '/ask';
+                }
+            });
         }
     </script>
 </body>
