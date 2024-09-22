@@ -15,7 +15,7 @@
             <div class="container">
                 <div class="text-center p-4 p-lg-5">
                     <p class="fw-bold text-primary mb-2">歡迎回來</p>
-                    <h1 class="fw-bold mb-4">請選擇你的主訴（可複選）</h1>
+                    <h1 class="fw-bold mb-4">請確認是否有以下症狀（可複選）</h1>
                 </div>
             </div>
         </section>
@@ -29,39 +29,10 @@
             <button id="nextStep" onclick="nextStep()" class="btn btn-outline-info ms-auto" style="display: none;">下一步</button>
         </div>
         <div>
-
-            <ul class="nav nav-tabs" role="tablist">
-                {% for key in cc.keys() %}
-                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab"
-                        href="#{{ key }}">{{ key }}</a></li>
-                {% endfor %}
-            </ul>
-
-            <div class="tab-content">
-                <br>
-                {% for key, val in cc.items() %}
-                {% if key != '疼痛' %}
-                <div class="tab-pane" role="tabpanel" id="{{ key }}">
-                    {% for k, v in val.items() %}
-                    <button class="btn btn-light" id="{{ naming[k] }}" onclick="addItem('{{ k }}', '{{ key }}')"
-                        data-toggle="tooltip" data-placement="top" title="{{ v }}">{{ k }}</button>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <div class="tab-pane" role="tabpanel" id="{{ key }}">
-                    {% for k, v in val.items() %}
-                    <h5>請選擇{{ k }}</h5>
-                    {% for i, j in v.items() %}
-                    <button class="btn btn-light" id="{{ naming[i] }}" onclick="addHurt('{{ i }}', '{{ k }}')"
-                        data-toggle="tooltip" data-placement="top" title="{{ j }}">{{ i }}</button>
-                    {% endfor %}
-                    <br><br>
-                    {% endfor %}
-                    <button onclick="addItem(hurt.slice(), '{{ key }}')" class="btn btn-primary">選擇</button>
-                </div>
-                {% endif %}
-                {% endfor %}
-            </div>
+            {% for k, v in dcc.items() %}
+            <button class="btn btn-light" id="{{ naming[k] }}" onclick="addItem('{{ k }}', '{{ key }}')"
+                data-toggle="tooltip" data-placement="top" title="{{ v }}">{{ k }}</button>
+            {% endfor %}
         </div>
 
         <center><img width="40%" src="static/img/body_pic.png" alt="A picture of the body"></center>
@@ -81,57 +52,10 @@
         chose = {};
         naming = JSON.parse('{{ naming | tojson | safe }}');
 
-        hurt = ["", ""];
-        hurtCnt = 1;
-
-        function addHurt(item, type) {
-            if (type == "部位") {
-                type = 0;
-            }
-            else {
-                type = 1;
-            }
-
-            if (item == hurt[type]) {
-                $("#" + naming[item]).attr('class', 'btn btn-light');
-                hurt[type] = "";
-            }
-            else {
-                if (hurt[type] != "") {
-                    $("#" + naming[hurt[type]]).attr('class', 'btn btn-light');
-                }
-                $("#" + naming[item]).attr('class', 'btn btn-dark');
-                hurt[type] = item;
-            }
-        }
-
         function addItem(item, type) {
             let truth = [];
-            if (type == "疼痛") {
-                if (item[0] != "" && item[1] != "") {
-                    truth.push(item[0] + "痛");
-                    if(item[1] == "不確定") {
-                        item[1] = "";
-                    }
-                    truth.push(item.join(''));
 
-                    if(item[0] == "胃脘" || item[0] == "心臟") {
-                        truth.push("臟器" + item[1]);
-                    }
-                    if(item[0] == "痰"){
-                        truth.push("咳痰");
-                    }
-
-                    item = item.join('');
-                }
-                else {
-                    return;
-                }
-            }
-            else{
-                truth.push(item);
-            }
-
+            truth.push(item);
 
             if (naming[item] == undefined) {
                 id = "hurt-" + hurtCnt;
@@ -140,22 +64,15 @@
             else {
                 id = naming[item];
             }
-            
+
             if (chose[item] != undefined) { // delete
                 delete chose[item]
                 $('#' + id).attr('class', 'btn btn-light');
             } else {
                 chose[item] = truth;
-                
                 $('#' + id).attr('class', 'btn btn-dark');
             }
 
-            if (type == "疼痛") {
-                $("#" + naming[hurt[0]]).attr('class', 'btn btn-light');
-                $("#" + naming[hurt[1]]).attr('class', 'btn btn-light');
-                hurt = ["", ""];
-            }
-            
             $('#cc-list').text(Object.keys(chose).sort().join(', '));
 
             if (Object.keys(chose).length > 0) {
@@ -193,14 +110,13 @@
             }
             chose_out = Array.from(chose_out);
 
-            console.log(chose_out);
-
-            axios.post('/api/ask', {
-                'name': '{{ name }}',
-                'chose': chose_out
-            }).then(function (res) {
-                if (res.data['message'] == 'ok') {
-                    window.location.href = '/ask1?name={{ name }}';
+            axios.post('/api/ask1', {
+                'name': "{{ name }}",
+                'dcc': chose_out
+            }).then(function (response) {
+                if(response.data['message'] == 'ok') {
+                    // window.location.href = '/ask';
+                    alert('ok');
                 }
                 else {
                     alert("發生錯誤");
@@ -209,11 +125,14 @@
                 console.log(error);
             });
 
+
+            
+
             // $.ajax({
             //     type: 'POST',
             //     url: '/ask',
             //     data: {
-            //         'chose': chose
+            //         'cc': chose
             //     },
             //     success: function (data) {
             //         window.location.href = '/ask';

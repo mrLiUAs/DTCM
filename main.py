@@ -9,6 +9,7 @@ from flask import render_template, url_for, redirect, session, flash
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from mail import send_mail
+import dia
 # from AI import diagnose
 
 load_dotenv()
@@ -17,6 +18,18 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 
 mongo = PyMongo(app)
+
+ccs = dict(mongo.db.cc.find_one({"_id": ObjectId("66d03a623a09da928a34c0a4")}))
+ccs.pop("_id")
+
+def gen_naming(l: list) -> dict:
+    naming = {}
+    num = 1
+    for i in l:
+        naming[i] = "sick-" + str(num)
+        num += 1
+
+    return naming
 
 def generate_room():
     room = str(random.randint(0, 99999))
@@ -80,6 +93,9 @@ def api_signup():
         data["oncall"] = False
         data["doctor"] = "None"
         data["room"] = "None"
+
+        data["cc"] = []
+        data["dcc"] = []
 
         mongo.db.users.insert_one(data)
 
@@ -253,19 +269,14 @@ def api_diagnose():
 
 @app.route("/de", methods=["GET", "POST"])
 def test():
-    cc = dict(mongo.db.cc.find_one({"_id": ObjectId("66d03a623a09da928a34c0a4")}))
-    cc.pop("_id")
 
-    return render_template("test.html", **{"name": "test"}, cc=cc)
+    return render_template("test.html", **{"name": "test"}, cc=ccs)
 
 @app.route("/ask", methods=["GET", "POST"])
 def ask():
-    cc = dict(mongo.db.cc.find_one({"_id": ObjectId("66d03a623a09da928a34c0a4")}))
-    cc.pop("_id")
-
     naming = {}
     num = 1
-    for val in cc.values():
+    for val in ccs.values():
         for k, v in val.items():
             if type(v) == dict:
                 for i in v.keys():
@@ -275,7 +286,46 @@ def ask():
                 naming[k] = "sick-" + str(num)
                 num += 1
 
-    return render_template("ask.html", cc=cc, naming=naming)
+    return render_template("ask.html", name=request.args.get("name"), cc=ccs, naming=naming)
+
+@app.route("/api/ask", methods=["POST"])
+def api_ask():
+    try:
+        chose = request.get_json()["chose"]
+        ask_back = dia.ask1(chose)
+        dcc = {}
+        for c in ask_back:
+            dcc[c] = "無提示"
+            for i in ccs.values():
+                if c in i:
+                    dcc[c] = i.get(c, "無提示")
+                    break
+        
+        mongo.db.users.update_one({"username": request.get_json()["name"]}, {"$set": {"cc": chose, "dcc": dcc}})
+
+        return jsonify({"message": "ok"})
+    except:
+        return jsonify({"message": "error"})
+    
+@app.route("/ask1", methods=["GET", "POST"])
+def ask1():
+    dcc = mongo.db.users.find_one({"username": request.args.get("name")})["dcc"]
+    naming = gen_naming(dcc.keys())
+
+    return render_template("ask1.html", name=request.args.get("name"), dcc=dcc, naming=naming)
+
+@app.route("/api/ask1", methods=["POST"])
+def api_ask1():
+    # try:
+        cc = mongo.db.users.find_one({"username": request.get_json()["name"]})["cc"]
+        dcc = request.get_json()["dcc"]
+        mongo.db.users.update_one({"username": request.get_json()["name"]}, {"$set": {"dcc": dcc}})
+
+        dia.ask2(cc, dcc)
+
+        return jsonify({"message": "ok"})
+    # except:
+    #     return jsonify({"message": "error"})
 
 if __name__ == "__main__":
     app.run(debug=True, port=3000)

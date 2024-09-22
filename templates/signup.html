@@ -399,8 +399,9 @@
 
             axios.post('/api/signup', data)
                 .then((res) => {
-                    if (res.data.message == "Login successful") {
-                        alert("water");
+                    if (res.data.message == "ok") {
+                        alert("註冊成功");
+                        window.location.href = "/login";
                     }
                     else if (res.data.message == "Invalid credentials") {
                         alert("Invalid credentials");
