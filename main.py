@@ -19,8 +19,13 @@ app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 
 mongo = PyMongo(app)
 
-ccs = dict(mongo.db.cc.find_one({"_id": ObjectId("66d03a623a09da928a34c0a4")}))
+ccs = dict(mongo.db.cc.find_one({"_id": ObjectId(os.getenv("CC"))}))
 ccs.pop("_id")
+
+ccs_dict = {}
+for v in ccs.values():
+    for name, ins in v.items():
+        ccs_dict[name] = ins
 
 def gen_naming(l: list) -> dict:
     naming = {}
@@ -293,15 +298,15 @@ def api_ask():
     try:
         chose = request.get_json()["chose"]
         ask_back = dia.ask1(chose)
-        dcc = {}
-        for c in ask_back:
-            dcc[c] = "無提示"
-            for i in ccs.values():
-                if c in i:
-                    dcc[c] = i.get(c, "無提示")
-                    break
+        # dcc = {}
+        # for c in ask_back:
+        #     dcc[c] = "無提示"
+        #     for i in ccs.values():
+        #         if c in i:
+        #             dcc[c] = i.get(c, "無提示")
+        #             break
         
-        mongo.db.users.update_one({"username": request.get_json()["name"]}, {"$set": {"cc": chose, "dcc": dcc}})
+        mongo.db.users.update_one({"username": request.get_json()["name"]}, {"$set": {"cc": chose, "dcc": ask_back}})
 
         return jsonify({"message": "ok"})
     except:
@@ -309,7 +314,11 @@ def api_ask():
     
 @app.route("/ask1", methods=["GET", "POST"])
 def ask1():
-    dcc = mongo.db.users.find_one({"username": request.args.get("name")})["dcc"]
+    tmp = mongo.db.users.find_one({"username": request.args.get("name")})["dcc"]
+    dcc = {}
+    for c in tmp:
+        dcc[c] = ccs_dict.get(c, "無提示")
+    
     naming = gen_naming(dcc.keys())
 
     return render_template("ask1.html", name=request.args.get("name"), dcc=dcc, naming=naming)
@@ -321,9 +330,7 @@ def api_ask1():
         dcc = request.get_json()["dcc"]
         mongo.db.users.update_one({"username": request.get_json()["name"]}, {"$set": {"dcc": dcc}})
 
-        dia.ask2(cc, dcc)
-
-        return jsonify({"message": "ok"})
+        return jsonify({"message": "ok", "result": dia.ask2(cc, dcc)})
     # except:
     #     return jsonify({"message": "error"})
 
