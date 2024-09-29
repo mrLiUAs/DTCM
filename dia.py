@@ -31,7 +31,7 @@ def ask1(cc: list) -> list:
 
 def ask2(cc: list, dcc: list):
     """
-    find the most possible binxing and then ask3 and then ask back again
+    find the most possible binxing name and score
     """
 
     res = ""
@@ -55,9 +55,9 @@ def ask2(cc: list, dcc: list):
             maxi = cnt
             res = ill
         
-    return ask3(cc, dcc, res)
+    return [res, maxi]
 
-def ask3(cc: list, dcc: list, ccill: str) -> list:
+def ask3(cc: list, dcc: list, ccill: str, ccill_score: int) -> list:
     """
     find top 5 binway
     """
@@ -82,17 +82,53 @@ def ask3(cc: list, dcc: list, ccill: str) -> list:
                 break
 
         if ccill in ill:
-            cnt += 1
+            cnt += ccill_score
 
         scores[place] = cnt
 
-    res = sorted(scores.items(), key=lambda item: item[1], reverse=True)[:5]
+    tmp = sorted(scores.items(), key=lambda item: item[1], reverse=True)[:5]
+    res = [i[0] for i in tmp]
         
     return res
 
 def ask4(bws: list) -> list:
+    """
+    ask back second time for binway
+    """
+
     res = []
     for bw in bws:
         res += binway[bw]["sym"]
 
     return res
+
+def ask5(cc: list, dcc: list, ccill: str, ccill_score: int, bws: list) -> dict:
+    """
+    recalculate the 5 binways scores
+    """
+
+    scores = {}
+
+    for bw in bws:
+        sym = binway[bw]["sym"]
+        ill = binway[bw]["ill"]
+
+        cnt = 0
+        for c in cc:
+            if c in sym:
+                cnt += 1
+                
+                break
+        
+        for c in dcc:
+            if c in sym:
+                cnt += 0.9
+                
+                break
+
+        if ccill in ill:
+            cnt += ccill_score
+
+        scores[bw] = cnt
+        
+    return scores

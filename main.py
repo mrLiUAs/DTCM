@@ -101,6 +101,9 @@ def api_signup():
 
         data["cc"] = []
         data["dcc"] = []
+        data["bx"] = ""
+        data["bx_score"] = 0
+        data["bw"] = {}
 
         mongo.db.users.insert_one(data)
 
@@ -325,14 +328,65 @@ def ask1():
 
 @app.route("/api/ask1", methods=["POST"])
 def api_ask1():
-    # try:
+    try:
         cc = mongo.db.users.find_one({"username": request.get_json()["name"]})["cc"]
         dcc = request.get_json()["dcc"]
-        mongo.db.users.update_one({"username": request.get_json()["name"]}, {"$set": {"dcc": dcc}})
+        bx, score = dia.ask2(cc, dcc)
+        bw = dict.fromkeys(dia.ask3(cc, dcc, bx, score), 0)
+        mongo.db.users.update_one({"username": request.get_json()["name"]}, {"$set": {"dcc": dcc, "bx": bx, "bx_score": score, "bw": bw}})
 
-        return jsonify({"message": "ok", "result": dia.ask2(cc, dcc)})
-    # except:
-    #     return jsonify({"message": "error"})
+        return jsonify({"message": "ok"})
+    except:
+        return jsonify({"message": "error"})
+    
+@app.route("/ask2", methods=["GET", "POST"])
+def ask2():
+    try:
+        name = request.args.get("name")
+        user = mongo.db.users.find_one({"username": name})
+
+        bx = user["bx"]
+        bx_score = user["bx_score"]
+        bw = user["bw"]
+
+        ask_back = dict.fromkeys(dia.ask4(bw.keys()), "")
+        naming = gen_naming(ask_back.keys())
+        for i in ask_back.keys():
+            ask_back[i] = ccs_dict.get(i, "無提示")
+
+        return render_template("ask2.html", name=name, bw=ask_back, naming=naming)
+    except:
+
+        return abort(404)
+    
+@app.route("/api/ask2", methods=["POST"])
+def api_ask2():
+    try:
+        name = request.get_json()["name"]
+        user = mongo.db.users.find_one({"username": name})
+        dcc = request.get_json()["dcc"] + user["dcc"]
+        cc = user["cc"]
+        bx = user["bx"]
+        bx_score = user["bx_score"]
+        bw = user["bw"]
+        bw = dia.ask5(cc, dcc, bx, bx_score, bw.keys())
+        mongo.db.users.update_one({"username": name}, {"$set": {"bw": bw, "dcc": dcc}})
+
+        return jsonify({"message": "ok"})
+    except:
+        return jsonify({"message": "error"})
+    
+@app.route("/ask_res", methods=["GET", "POST"])
+def ask_res():
+    try:
+        name = request.args.get("name")
+        user = mongo.db.users.find_one({"username": name})
+        realname = user["info"]["name"]
+        bw = user["bw"]
+
+        return render_template("ask_res.html", name=name, bw=bw, realname=realname)
+    except:
+        return abort(404)
 
 if __name__ == "__main__":
     app.run(debug=True, port=3000)

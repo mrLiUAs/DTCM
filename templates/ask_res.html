@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>DTCM</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="/static/css/bootstrap-icons.min.css"> -->
+</head>
+
+<body>
+    <div class="px-5">
+        <section class="py-4 py-xl-5">
+            <div class="container">
+                <div class="text-center p-4 p-lg-5">
+                    <p class="fw-bold text-primary mb-2">*診斷結果僅供參考</p>
+                    <h1 class="fw-bold mb-4">{{ realname }} 的診斷結果</h1>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="px-5">
+        <div class="container-fluid">
+            <div class="row">
+                {% for k, v in bw.items() %}
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3>{{ k }}</h3>
+                            <p class=".text-secondary">{{ v }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
